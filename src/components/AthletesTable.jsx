@@ -6,6 +6,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import Avatar from "@material-ui/core/Avatar";
+import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
 
 import MenuAppBar from "./ui/MenuAppBar.jsx";
@@ -19,6 +21,14 @@ const styles = theme => ({
   },
   table: {
     minWidth: 700
+  },
+  avatar: {
+    margin: 10
+  },
+  bigAvatar: {
+    margin: 10,
+    width: 60,
+    height: 60
   }
 });
 
@@ -40,13 +50,14 @@ class AthletesTable extends Component {
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Nome</TableCell>
+                <TableCell />
+                <TableCell align="right">Nome</TableCell>
                 <TableCell align="right">Preço (C$)</TableCell>
                 <TableCell align="right">Média</TableCell>
                 <TableCell align="right">Pontos</TableCell>
                 <TableCell align="right">Variacao</TableCell>
-                <TableCell align="right">Preco Anterior</TableCell>
                 <TableCell align="right">Variacao (%)</TableCell>
+                <TableCell align="right">Preco Anterior</TableCell>
                 <TableCell align="right">Preço/Média</TableCell>
                 <TableCell align="right">Preço (53%)</TableCell>
                 <TableCell align="right">Pontos (min)(var)</TableCell>
@@ -59,11 +70,25 @@ class AthletesTable extends Component {
                   let media_min = athlete.preco_num * 0.49;
                   let pontos_min = media_min * 2 - athlete.media_num;
                   let preco_anterior = athlete.preco_num - athlete.variacao_num;
+                  let foto = "";
+                  try {
+                    foto = athlete["foto"].replace("FORMATO", "140x140");
+                  } catch (error) {
+                    console.error(error);
+                  }
                   return (
                     <TableRow key={athlete.atleta_id}>
                       <TableCell component="th" scope="row">
-                        {athlete.apelido}
+                        <Grid container justify="center" alignItems="center">
+                          {/* <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" className={classes.avatar} /> */}
+                          <Avatar
+                            alt="Remy Sharp"
+                            src={foto}
+                            className={classes.bigAvatar}
+                          />
+                        </Grid>
                       </TableCell>
+                      <TableCell align="right">{athlete.apelido}</TableCell>
                       <TableCell align="right">
                         {athlete.preco_num.toLocaleString("pt-BR", {
                           maximumFractionDigits: 2
@@ -85,18 +110,19 @@ class AthletesTable extends Component {
                         })}
                       </TableCell>
                       <TableCell align="right">
-                        {preco_anterior.toLocaleString("pt-BR", {
-                          maximumFractionDigits: 2
-                        })}
-                      </TableCell>
-                      <TableCell align="right">
                         {(athlete.preco_num / preco_anterior).toLocaleString(
                           "pt-BR",
                           {
                             maximumFractionDigits: 2,
+                            minimumFractionDigits: 2,
                             style: "percent"
                           }
                         )}
+                      </TableCell>
+                      <TableCell align="right">
+                        {preco_anterior.toLocaleString("pt-BR", {
+                          maximumFractionDigits: 2
+                        })}
                       </TableCell>
                       <TableCell align="right">
                         {(athlete.preco_num / athlete.media_num).toLocaleString(
