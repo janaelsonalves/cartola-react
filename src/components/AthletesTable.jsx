@@ -36,7 +36,8 @@ class AthletesTable extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      athletes: []
+      athletes: [],
+      teams: []
     };
   }
 
@@ -51,16 +52,17 @@ class AthletesTable extends Component {
             <TableHead>
               <TableRow>
                 <TableCell />
-                <TableCell align="right">Nome</TableCell>
-                <TableCell align="right">Preço (C$)</TableCell>
-                <TableCell align="right">Média</TableCell>
-                <TableCell align="right">Pontos</TableCell>
-                <TableCell align="right">Variacao</TableCell>
-                <TableCell align="right">Variacao (%)</TableCell>
-                <TableCell align="right">Preco Anterior</TableCell>
-                <TableCell align="right">Preço/Média</TableCell>
-                <TableCell align="right">Preço (53%)</TableCell>
-                <TableCell align="right">Pontos (min)(var)</TableCell>
+                <TableCell />
+                <TableCell align="center">Nome</TableCell>
+                <TableCell align="center">Preço (C$)</TableCell>
+                <TableCell align="center">Média</TableCell>
+                <TableCell align="center">Pontos</TableCell>
+                <TableCell align="center">Variacao</TableCell>
+                <TableCell align="center">Variacao (%)</TableCell>
+                <TableCell align="center">Preco Anterior</TableCell>
+                <TableCell align="center">Preço/Média</TableCell>
+                <TableCell align="center">Preço (53%)</TableCell>
+                <TableCell align="center">Pontos (min)(var)</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -71,6 +73,7 @@ class AthletesTable extends Component {
                   let pontos_min = media_min * 2 - athlete.media_num;
                   let preco_anterior = athlete.preco_num - athlete.variacao_num;
                   let foto = "";
+                  let clube = this.findTeamById(athlete.clube_id);
                   try {
                     foto = athlete["foto"].replace("FORMATO", "140x140");
                   } catch (error) {
@@ -79,37 +82,40 @@ class AthletesTable extends Component {
                   return (
                     <TableRow key={athlete.atleta_id}>
                       <TableCell component="th" scope="row">
+                        {clube.nome}
+                      </TableCell>
+                      <TableCell component="th" scope="row">
                         <Grid container justify="center" alignItems="center">
                           {/* <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" className={classes.avatar} /> */}
                           <Avatar
                             alt="Remy Sharp"
                             src={foto}
-                            className={classes.bigAvatar}
+                            className={classes.avatar}
                           />
                         </Grid>
                       </TableCell>
-                      <TableCell align="right">{athlete.apelido}</TableCell>
-                      <TableCell align="right">
+                      <TableCell align="left">{athlete.apelido}</TableCell>
+                      <TableCell align="center">
                         {athlete.preco_num.toLocaleString("pt-BR", {
                           maximumFractionDigits: 2
                         })}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {athlete.media_num.toLocaleString("pt-BR", {
                           maximumFractionDigits: 2
                         })}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {athlete.pontos_num.toLocaleString("pt-BR", {
                           maximumFractionDigits: 2
                         })}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {athlete.variacao_num.toLocaleString("pt-BR", {
                           maximumFractionDigits: 2
                         })}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {(athlete.preco_num / preco_anterior).toLocaleString(
                           "pt-BR",
                           {
@@ -119,12 +125,12 @@ class AthletesTable extends Component {
                           }
                         )}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {preco_anterior.toLocaleString("pt-BR", {
                           maximumFractionDigits: 2
                         })}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {(athlete.preco_num / athlete.media_num).toLocaleString(
                           "pt-BR",
                           {
@@ -132,12 +138,12 @@ class AthletesTable extends Component {
                           }
                         )}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {media_min.toLocaleString("pt-BR", {
                           maximumFractionDigits: 2
                         })}
                       </TableCell>
-                      <TableCell align="right">
+                      <TableCell align="center">
                         {pontos_min.toLocaleString("pt-BR", {
                           maximumFractionDigits: 2
                         })}
@@ -154,7 +160,9 @@ class AthletesTable extends Component {
 
   componentDidMount() {
     this.getAthletes()
-      .then(res => this.setState({ athletes: res["atletas"] }))
+      .then(res =>
+        this.setState({ athletes: res["atletas"], teams: res["clubes"] })
+      )
       .catch(err => console.error(err));
   }
 
@@ -163,6 +171,16 @@ class AthletesTable extends Component {
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
     return body;
+  };
+
+  // findTeamById = async id => {
+  findTeamById = id => {
+    let entries = Object.entries(this.state.teams);
+    for (const [team_id, team] of entries) {
+      if (team_id === id) {
+        return team;
+      }
+    }
   };
 }
 AthletesTable.propTypes = {
